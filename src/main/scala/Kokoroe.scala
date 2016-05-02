@@ -3,4 +3,11 @@
   */
 object Kokoroe {
 
+  /**
+    * Start of the job.
+    * @param args
+    */
+  def main(args: Array[String]): Unit = {
+    // foo - bar
+  }
 }
