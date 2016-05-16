@@ -74,3 +74,6 @@ project/plugins/project/
 .worksheet
 
 project/
+
+# configuration
+src/main/resources/rico.conf
