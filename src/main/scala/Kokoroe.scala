@@ -9,5 +9,8 @@ object Kokoroe {
     */
   def main(args: Array[String]): Unit = {
     // foo - bar
+    println("hello")
+    val b = new Batch
+    println(b.teststr)
   }
 }
