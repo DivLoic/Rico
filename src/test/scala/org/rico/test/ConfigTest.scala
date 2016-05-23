@@ -24,7 +24,7 @@ class ConfigTest extends FunSuite {
     assert(ricoConf.getLong("casetwo.pi").isInstanceOf[Long])
   }
 
-  test("Configuration") {
+  test("Configuration bring a correct sentence") {
     val title = ricoConf.getString("testcase")
     assert(title.split(" ").size == 9)
   }

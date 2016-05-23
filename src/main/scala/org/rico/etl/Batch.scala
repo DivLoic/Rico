@@ -9,7 +9,7 @@ import scala.util.matching.Regex
 /**
   * Created by LoicMDIVAD on 02/05/2016.
   */
-class Batch(driver:String, host:String, port:String, schema:String, pwd:String) {
+class Batch(driver:String, host:String, port:String, schema:String, pwd:String) extends Serializable {
 
   def this() = this("", "localhost", "3306", "kokoroe", "root")
 
