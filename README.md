@@ -1,1 +1,5 @@
 # Rico
+
+### Setup
+### Configuration 
+### Credits
