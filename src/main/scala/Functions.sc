@@ -1,4 +1,6 @@
 import java.text.Normalizer
+
+import scala.math.BigDecimal
 import scala.util.matching.Regex
 // TODO: Replace this
 
@@ -46,3 +48,6 @@ list.size
 
 val a = Array(1,2,3)
 a.contains(0)
+
+val i :BigDecimal =  3
+i.toInt.asInstanceOf[java.lang.Integer]

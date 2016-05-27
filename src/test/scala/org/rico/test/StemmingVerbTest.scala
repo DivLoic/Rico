@@ -1,21 +1,22 @@
 package org.rico.test
 
 import com.typesafe.config.ConfigFactory
+import com.typesafe.scalalogging.slf4j.Logger
 import org.scalatest.FunSuite
 import org.scalatest.exceptions.TestFailedException
-import org.tartarus.snowball.ext.frenchStemmer
+import org.slf4j.LoggerFactory
+import org.tartarus.snowball.ext.FrenchStemmer
 
 /**
   * Created by loicmdivad on 21/05/2016.
   */
 class StemmingVerbTest extends FunSuite {
 
-  val ricoConf = ConfigFactory.load("rico")
-  val LogOn = ricoConf.getBoolean("logger.test")
+  val conf = ConfigFactory.load("rico")
+  val log = Logger(LoggerFactory.getLogger("name"))
+  val LogOn = conf.getBoolean("logger.test")
 
-  val fr = new frenchStemmer()
-
-
+  val fr = new FrenchStemmer()
 
   def compareStemming(initWord:String, toCompare:Array[String]): Unit ={
     fr.setCurrent(initWord)
@@ -25,33 +26,31 @@ class StemmingVerbTest extends FunSuite {
     var rightStemmed :String = new String()
 
     for(word <- toCompare){
-      if(LogOn) println(s"[INFO] - Running the stemming test for: $word")
       fr.setCurrent(word)
+      log info s"Running the stemming test for the word: $word"
 
       if(fr.stem()){
         rightStemmed = fr.getCurrent()
-        assert(
-          leftStemmed == rightStemmed,
-          s"[ERROR] - The stemming expected: $leftStemmed instead find $rightStemmed"
+        assert( leftStemmed == rightStemmed,
+          log debug s"The stemming expected: $leftStemmed instead find $rightStemmed"
         )
       }
-
     }
   }
 
-  test("Compare first group verb with their infinitive.") {
+  test("Compare first group verbs with their infinitive.") {
     compareStemming("manger", Array("mangé","mangeais","mangeront","manges","mangeâmes"))
   }
 
-  test("Compare second group verb with their infinitive.") {
+  test("Compare second group verbs with their infinitive.") {
     compareStemming("finir", Array("fini","finîmes","finis","finirez","finissent"))
   }
 
-  test("Compare third group verb with their infinitive.") {
+  test("Should fail Compare third group verbs with their infinitive.") {
     try {
-      compareStemming("prendre", Array("prendrons","preniez","prennent","prîmes","pris"))    }
-    catch {
-      case _: TestFailedException => println("[WARRNING] - The verb 'prendre' is'nt totaly treat by snowball")
+      compareStemming("prendre", Array("prendrons","preniez","prennent","prîmes","pris"))
+    } catch {
+      case _: TestFailedException => log warn "The verb 'prendre' is'nt totaly treated by snowball"
     }
   }
 }

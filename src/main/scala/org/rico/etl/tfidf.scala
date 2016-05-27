@@ -16,11 +16,12 @@ object Tfidf {
   /**
     * Since int are represeted with java.math.BigDecimal this <br/>
     * user difined function is used to convert dataFrame column in int
+    *
     * @return
     */
   def udfToInt = udf[Int, java.math.BigDecimal](new BigDecimal(_).toInt)
 
-  case class TfVector(course_id:Int, indices:List[Int], values:List[Double])
+  case class tfidfVector(course_id:Int, indices:List[Int], values:List[Double])
 
   def main(args: Array[String]): Unit = {
 
@@ -44,10 +45,9 @@ object Tfidf {
     )
 
     val sqlDf = batch.sqlSelect(sqlContext, "courses_translations")
-      .filter(s"locale = '${conf.getString("lang")}'")
+      .filter(s"locale = '${conf.getString("lang.sigle")}'")
       .select("course_id", "title", "experience", "program", "material")
 
-    sqlDf.show(10)
 
     // java.math.BigDecimal -> scala.Int
     val df = sqlDf.withColumn("course_id", udfToInt(sqlDf("course_id")))
@@ -62,13 +62,12 @@ object Tfidf {
 
     val tfidfRdd = tfRdd
         .map { x => ( x._1, idf.transform(x._2) ) }
-        .map { x => new TfVector(x._1, x._2.toSparse.indices.toList, x._2.toSparse.values.toList ) }
+        .map { x => new tfidfVector(x._1, x._2.toSparse.indices.toList, x._2.toSparse.values.toList ) }
 
     // Fix the database sparsity for test db
-    val tfidf = tfidfRdd.filter(_.indices.size > 30)
+    val tfidfC = tfidfRdd.filter(_.indices.size > 30)
 
-
-    tfidf.saveToCassandra(
+    tfidfC.saveToCassandra(
       conf.getString("cassandra.keyspace"), "termvectors",
       SomeColumns("course_id", "indices", "values")
     )

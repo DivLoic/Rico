@@ -1,0 +1,38 @@
+env         = "..."
+
+# spark configuration
+spark {
+  master    = "..."
+  port      = "..."
+}
+
+# sql database configuration
+sql {
+  driver    = "..."
+  host      = "..."
+  port      = "..."
+  schema    = "..."
+  password  = "..."
+}
+
+# cql database configuration
+cassandra {
+  host      = "..."
+  port      = "..."
+  keyspace  = "..."
+}
+
+regexp      = "..."
+
+# Natural language used
+lang {
+  sigle     = "fr"
+  stemmer   = "FrenchStemmer"
+}
+
+logger {
+  test      = "..."
+  dev       = "..."
+  staging   = "..."
+  prod      = "..."
+}
