@@ -15,9 +15,9 @@ object Tfidf {
 
   /**
     * Since int are represeted with java.math.BigDecimal this <br/>
-    * user difined function is used to convert dataFrame column in int
+    * user difined function is used to convert dataFrame column from BigDecimal to int
     *
-    * @return
+    * @return :Unit
     */
   def udfToInt = udf[Int, java.math.BigDecimal](new BigDecimal(_).toInt)
 
@@ -44,18 +44,28 @@ object Tfidf {
       conf.getString("sql.password")
     )
 
+    val trfm = new Transformer(
+      conf.getString("lang.stemmer"),
+      conf.getString("lang.analyzer"),
+      conf.getString("lang.sigle")
+    )
+
+    val luceneFormat = trfm.doStop()
+
+    // load from Mysql
     val sqlDf = batch.sqlSelect(sqlContext, "courses_translations")
       .filter(s"locale = '${conf.getString("lang.sigle")}'")
       .select("course_id", "title", "experience", "program", "material")
-
 
     // java.math.BigDecimal -> scala.Int
     val df = sqlDf.withColumn("course_id", udfToInt(sqlDf("course_id")))
 
     val hashing = new HashingTF()
 
-    val tfRdd =  df.map {
-      x => ( x.getInt(0) , hashing.transform( batch.cleanWords(x.getString(2)).split(" ").toSeq) )
+    //TODO: Delete the following reminder
+    //batch.cleanWords(x.getString(2)).split(" ").toSeq
+    val tfRdd =  df.map { // TODO: Modify with the transformers sotp words
+      x => ( x.getInt(0) , hashing.transform( luceneFormat(x.getString(2))) )
     }
 
     val idf = new IDF().fit(tfRdd.map(x => x._2))

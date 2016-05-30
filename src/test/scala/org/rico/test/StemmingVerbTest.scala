@@ -14,7 +14,6 @@ class StemmingVerbTest extends FunSuite {
 
   val conf = ConfigFactory.load("rico")
   val log = Logger(LoggerFactory.getLogger("name"))
-  val LogOn = conf.getBoolean("logger.test")
 
   val fr = new FrenchStemmer()
 
@@ -27,7 +26,7 @@ class StemmingVerbTest extends FunSuite {
 
     for(word <- toCompare){
       fr.setCurrent(word)
-      log info s"Running the stemming test for the word: $word"
+      log debug s"Running the stemming test for the word: $word"
 
       if(fr.stem()){
         rightStemmed = fr.getCurrent()

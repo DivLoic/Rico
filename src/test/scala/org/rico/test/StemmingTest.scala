@@ -63,7 +63,7 @@ class StemmingTest extends FunSuite {
     if(fr.stem()) assert(fr.getCurrent equals "chu")
   }
 
-  test("It shoul deal with verbe") {
+  test("It should deal with verbe") {
 
     fr.setCurrent("nous mangerons")
     if(fr.stem()) assert(fr.getCurrent equals "nous mang")

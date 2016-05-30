@@ -22,6 +22,7 @@ libraryDependencies  ++= Seq(
   "com.datastax.spark" % "spark-cassandra-connector_2.10" % "1.4.1",
 
   // stemming libraries
-  "org.apache.lucene" % "lucene-snowball" % "3.0.3"
+  "org.apache.lucene" % "lucene-snowball" % "3.0.3",
+  "org.apache.lucene" % "lucene-analyzers" % "3.6.2"
 
 )
