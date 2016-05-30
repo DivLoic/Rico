@@ -11,6 +11,7 @@ import scala.util.matching.Regex
   */
 class Batch(driver:String, host:String, port:String, schema:String, pwd:String) extends Serializable {
 
+  //TODO: add a user configuration & pass it to sqlSelect
   def this() = this("", "localhost", "3306", "kokoroe", "root")
 
   /**

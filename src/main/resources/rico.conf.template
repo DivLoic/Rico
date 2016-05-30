@@ -1,38 +1,40 @@
-env         = "..."
+env         = "dev"
 
 # spark configuration
 spark {
-  master    = "..."
-  port      = "..."
+  master    = "localhost"
+  port      = "7077"
 }
 
 # sql database configuration
 sql {
-  driver    = "..."
-  host      = "..."
-  port      = "..."
-  schema    = "..."
-  password  = "..."
+  driver    = "com.mysql.jdbc.Driver"
+  host      = "localhost"
+  port      = "3306"
+  schema    = "mydb"
+  user      = "root"
+  password  = "root"
 }
 
 # cql database configuration
 cassandra {
-  host      = "..."
-  port      = "..."
-  keyspace  = "..."
+  host      = "localhost"
+  port      = "9042"
+  keyspace  = "mykeyspace"
 }
 
 regexp      = "..."
 
 # Natural language used
 lang {
-  sigle     = "..."
-  stemmer   = "..."
+  sigle     = "fr"
+  stemmer   = "FrenchStemmer"
+  analyzer  = "FrenchAnalyzer"
 }
 
 logger {
-  test      = "..."
-  dev       = "..."
-  staging   = "..."
-  prod      = "..."
+  test      = "false"
+  dev       = "false"
+  staging   = "false"
+  prod      = "false"
 }
