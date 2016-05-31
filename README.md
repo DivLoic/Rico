@@ -22,15 +22,14 @@ Here is the tools & versions used for the project.
 
 
 ### Configuration
-1. Environment
+I. Environment
 Add to your *.bashrc* the following lines:
-````sh
+```sh
 export SPARK_PKGS="com.datastax.spark:spark-cassandra-connector_2.10:1.4.1"
 export SPARK_PKGS="org.apache.lucene:lucene-analyzers:3.6.2,${SPARK_PKGS}"
 export SPARK_PKGS="org.scalanlp:breeze_2.10:0.11.2,${SPARK_PKGS}"
-````
-2. Configuration file
-
+```
+II. Configuration file    
 (coming soon ...)
 
 ### Setup
@@ -46,7 +45,7 @@ $ cp src/main/resources/rico.conf.template src/main/resources/rico.conf
 $ vi src/main/resources/rico.conf
 ```
 
-Now compile the project and run
+Now compile the project and run the prejob to fill the cassandra db.
 ```bash
 $ sbt package
 $ cqlsh -f src/main/resources/rico.cql
