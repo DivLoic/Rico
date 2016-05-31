@@ -1,7 +1,6 @@
 package org.rico.test
 
 import com.typesafe.config.ConfigFactory
-import com.typesafe.scalalogging.slf4j.Logger
 import org.scalatest.FunSuite
 import org.scalatest.exceptions.TestFailedException
 import org.slf4j.LoggerFactory
@@ -13,7 +12,7 @@ import org.tartarus.snowball.ext.FrenchStemmer
 class StemmingVerbTest extends FunSuite {
 
   val conf = ConfigFactory.load("rico")
-  val log = Logger(LoggerFactory.getLogger("console"))
+  val log = LoggerFactory.getLogger("console")
 
   val fr = new FrenchStemmer()
 

@@ -4,9 +4,9 @@ import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 import com.datastax.spark.connector._
-import com.typesafe.scalalogging.slf4j.Logger
 import org.apache.spark.mllib.linalg.Vectors
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 /**
   * Created by loicmdivad on 30/05/2016.
@@ -31,8 +31,8 @@ object ItemView {
 
   def main(args: Array[String]) {
     val conf = ConfigFactory.load("rico")
-    val log  = Logger(LoggerFactory.getLogger("console"))
-    //val log LoggerFactory.getLogger(getClass)
+    //val log  = Logger(LoggerFactory.getLogger("console"))
+    val log  = LoggerFactory.getLogger(getClass)
 
     insureParams(args, log)
     val ITEMID = args(0)

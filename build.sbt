@@ -6,9 +6,8 @@ scalaVersion := "2.10.6"
 
 libraryDependencies  ++= Seq(
 
-  // Logging and Configuration file
+  // Logging and Configuration
   "com.typesafe" % "config" % "1.2.1",
-  "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
 
   // Unit test freamwork
   "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
