@@ -16,6 +16,7 @@ CREATE KEYSPACE IF NOT EXISTS kokoroe WITH REPLICATION = {
 
 CREATE TABLE IF NOT EXISTS kokoroe.termvectors (
 	course_id Int,
+	title Text,
 	indices LIST<Int>,
 	values LIST<Double>,
 	PRIMARY KEY (course_id)
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS kokoroe.bookings_by_user(
     course_id Int,
     create_at timestamp,
     status Int,
-    PRIMARY KEY ((user_id, course_id), create_at)
+    PRIMARY KEY (user_id, create_at)
 ) WITH CLUSTERING ORDER BY (create_at ASC);
 
 CREATE TABLE IF NOT EXISTS kokoroe.wishes_by_user(
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS kokoroe.wishes_by_user(
     course_id Int,
     create_at timestamp,
     status Int,
-    PRIMARY KEY ((user_id, course_id), create_at)
+    PRIMARY KEY (user_id, create_at)
 ) WITH CLUSTERING ORDER BY (create_at ASC);
 
 CREATE TABLE IF NOT EXISTS kokoroe.reviews_by_user(
@@ -46,7 +47,7 @@ CREATE TABLE IF NOT EXISTS kokoroe.reviews_by_user(
     rating Double,
     create_at timestamp,
     status Int,
-    PRIMARY KEY ((user_id, course_id), create_at)
+    PRIMARY KEY (user_id, create_at)
 ) WITH CLUSTERING ORDER BY (create_at ASC);
 
 /**

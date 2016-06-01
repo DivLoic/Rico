@@ -54,7 +54,7 @@ object ItemView {
 
     val indices = row.get[List[Int]]("indices").toArray
     val values = row.get[List[Double]]("values").toArray
-    //TODO: Configure the vector size
+
     val target = Vectors.sparse(conf.getInt("recommender.vectsize"),indices, values)
 
     val rdd = sc.cassandraTable(conf.getString("cassandra.keyspace"), "termvectors")
