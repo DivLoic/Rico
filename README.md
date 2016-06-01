@@ -2,9 +2,8 @@
 ###### Final project 2016 from @ISEP
 
 ### Subject
-> a really
-> a really
-> a really cool description
+>The isep lab has been working on a generic recommender system, able to recommend things like food, journey or training.
+>The main concern of this project is to design a scalable version of it.
 
 ### Technologies
 - [X] Apache Spark
@@ -50,6 +49,35 @@ Now compile the project and run the prejob to fill the cassandra db.
 $ sbt package
 $ cqlsh -f src/main/resources/rico.cql
 $ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master>
+```
+
+
+### Project
+
+```
+ .
+ ├── resources
+ │   ├── log4j.properties
+ │   ├── rico.conf.template
+ │   └── test.conf
+ └── scala
+     ├── Functions.sc
+     └── org
+         └── rico
+             ├── app
+             │   ├── ItemView.scala
+             │   └── UserView.scala
+             └── etl
+                 ├── Batch.scala
+                 ├── Loader.scala
+                 ├── Tfidf.scala
+                 └── Transformer.scala
+```
+
+### Coding Style
+
+```scala
+val foo:String = "bar";
 ```
 
 ### Our Team
