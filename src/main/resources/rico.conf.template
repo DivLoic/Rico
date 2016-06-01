@@ -23,8 +23,6 @@ cassandra {
   keyspace  = "mykeyspace"
 }
 
-regexp      = "..."
-
 # Natural language used
 lang {
   sigle     = "fr"
@@ -37,4 +35,9 @@ logger {
   dev       = "false"
   staging   = "false"
   prod      = "false"
+}
+
+# configuration of the recommender itself
+recommender {
+  nbresult  = "10"
 }

@@ -7,11 +7,17 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
 import com.datastax.spark.connector._
+import org.slf4j.LoggerFactory
 
 /**
   * Created by loicmdivad on 16/05/2016.
   */
 object Tfidf {
+
+  val conf = ConfigFactory.load("rico")
+  val log  = LoggerFactory.getLogger(getClass)
+
+  case class tfidfVector(course_id:Int, title:String, indices:List[Int], values:List[Double])
 
   /**
     * Since int are represeted with java.math.BigDecimal this <br/>
@@ -21,11 +27,7 @@ object Tfidf {
     */
   def udfToInt = udf[Int, java.math.BigDecimal](new BigDecimal(_).toInt)
 
-  case class tfidfVector(course_id:Int, indices:List[Int], values:List[Double])
-
   def main(args: Array[String]): Unit = {
-
-    val conf = ConfigFactory.load("rico")
 
     val sparkConf = new SparkConf()
       .setAppName("[rico] - tfidf")
@@ -62,24 +64,23 @@ object Tfidf {
 
     val hashing = new HashingTF()
 
-    //TODO: Delete the following reminder
-    //batch.cleanWords(x.getString(2)).split(" ").toSeq
-    val tfRdd =  df.map { // TODO: Modify with the transformers sotp words
-      x => ( x.getInt(0) , hashing.transform( luceneFormat(x.getString(2))) )
+    val tfRdd =  df.map {
+      x => ( x.getInt(0), x.getString(1), hashing.transform( luceneFormat(x.getString(2))) )
     }
 
-    val idf = new IDF().fit(tfRdd.map(x => x._2))
+    // FIT THE MODEL
+    val idf = new IDF().fit(tfRdd.map(x => x._3))
 
     val tfidfRdd = tfRdd
-        .map { x => ( x._1, idf.transform(x._2) ) }
-        .map { x => new tfidfVector(x._1, x._2.toSparse.indices.toList, x._2.toSparse.values.toList ) }
+        .map { x => ( x._1, x._2, idf.transform(x._3) ) }
+        .map { x => new tfidfVector(x._1, x._2, x._3.toSparse.indices.toList, x._3.toSparse.values.toList ) }
 
     // Fix the database sparsity for test db
     val tfidfC = tfidfRdd.filter(_.indices.size > 30)
 
     tfidfC.saveToCassandra(
       conf.getString("cassandra.keyspace"), "termvectors",
-      SomeColumns("course_id", "indices", "values")
+      SomeColumns("course_id", "title", "indices", "values")
     )
   }
 }

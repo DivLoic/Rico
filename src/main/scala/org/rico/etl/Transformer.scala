@@ -46,10 +46,9 @@ class Transformer(langStemmer:String="EnglishStemmer",
   /**
     * Return a function that able to stem one word with the lucene/snowball rules <br/>
     * It can pass in a map, filter or any spark transformation without any serialization <br/>
- *
     * @return func: (String) => (String)
     */
-  def doStem() :(String => String) = {
+  def doStem():(String => String) = {
 
     def stemmingFunction(word:String):String = {
       val stm = stemmerFactory(this.langStemmer)

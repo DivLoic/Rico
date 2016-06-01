@@ -1,4 +1,6 @@
+import java.sql.Timestamp
 import java.text.Normalizer
+
 import scala.math.BigDecimal
 import scala.util.matching.Regex
 
@@ -15,18 +17,21 @@ cleanWords("millénaire")
 cleanWords("Connaissez-vous")
 cleanWords(null)
 
-
-insureParms(Array("A"))
-insureParms(Array("12563"))
-insureParms(Array("1", "2"))
-
 val a = Array(1,2,3)
 a.contains(0)
 
 val i :BigDecimal =  3
 i.toInt.asInstanceOf[java.lang.Integer]
 
+"(\\d{4}|\\d{2})".r.findAllIn("2015-02-07 12:26:00")
+  .toList.asInstanceOf[List[Int]]
 
+new Timestamp(1423299953615L)
+new java.sql.Date(new Timestamp(1423299953615L).getTime)
+
+insureParms(Array("A"))
+insureParms(Array("12563"))
+insureParms(Array("1", "2"))
 
 
 /**
