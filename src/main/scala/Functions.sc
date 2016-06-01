@@ -1,6 +1,5 @@
 import java.sql.Timestamp
 import java.text.Normalizer
-
 import scala.math.BigDecimal
 import scala.util.matching.Regex
 

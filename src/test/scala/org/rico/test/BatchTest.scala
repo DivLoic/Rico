@@ -6,7 +6,7 @@ package org.rico.test
 import org.rico.etl.Batch
 import org.scalatest._
 
-class ®BatchTest extends FunSuite {
+class BatchTest extends FunSuite {
 
   val batch :Batch = new Batch()
 

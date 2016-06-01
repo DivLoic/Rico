@@ -30,7 +30,7 @@ class StemmingTest extends FunSuite {
     if(fr.stem()) assert(fr.getCurrent equals "les cour")
   }
 
-  test("It should remove mark of the paste") {
+  test("It should remove the mark of the paste") {
     fr.setCurrent("J'ai")
     if(fr.stem()) assert(fr.getCurrent equals "J'ai")
 
@@ -41,7 +41,7 @@ class StemmingTest extends FunSuite {
     if(fr.stem()) assert(fr.getCurrent equals "récompens")
   }
 
-  test("It should ") {
+  test("It should remove the mark of plural") {
     fr.setCurrent("nous")
     if(fr.stem()) assert(fr.getCurrent equals "nous")
 
