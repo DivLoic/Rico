@@ -2,8 +2,8 @@
 ###### Final project 2016 from @ISEP
 
 ### Subject
->The isep lab has been working on a generic recommender system, able to recommend things like food, journey or training.
->The main concern of this project is to design a scalable version of it.
+>The isep lab has been working on a generic recommender system, able to recommend
+>things like food, journey or training. The main concern of this project is to design a scalable version of it.
 
 ### Technologies
 - [X] Apache Spark
@@ -17,7 +17,8 @@ Here is the tools & versions used for the project.
 - jdk   : 1.7.0_80
 - sbt   : 0.13.9
 - scala : 2.10.6
-- spark (1.4.1), cassandra (2.2.5), zeppelin, mysql or [The gowalla VM demo](https://github.com/natalinobusa/gowalla-spark-demo)
+- spark (1.4.1), cassandra (2.2.5), zeppelin, mysql or
+[The gowalla VM demo](https://github.com/natalinobusa/gowalla-spark-demo)
 
 
 ### Configuration
@@ -48,36 +49,59 @@ Now compile the project and run the prejob to fill the cassandra db.
 ```bash
 $ sbt package
 $ cqlsh -f src/main/resources/rico.cql
-$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Job --master <your-master>
+$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master>
 $ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master>
 ```
 
-### Project
+### Optionals
 
+#### Test
+(coming soon ...)
+
+#### Service with *SparlJobServer*
+(coming soon ...)
+
+### Project
+Here is a tree of the project folder architecture. It present all files under the
+*main* folder. The *resources* folder contains the config files example and the **cql**
+script which initialise the cassandra keyspace. The package `org.rico.etl` refers to all
+code dealing with data acquisition and `org.rico.app` refers to the recommmender itself.
 ```
- .
- ├── resources
- │   ├── log4j.properties
- │   ├── rico.conf.template
- │   └── test.conf
- └── scala
-     ├── Functions.sc
-     └── org
-         └── rico
-             ├── app
-             │   ├── ItemView.scala
-             │   └── UserView.scala
-             └── etl
-                 ├── Batch.scala
-                 ├── Loader.scala
-                 ├── Tfidf.scala
-                 └── Transformer.scala
+.
+├── resources
+│   ├── log4j.properties
+│   ├── rico.conf.template
+│   ├── rico.cql
+│   └── test.conf
+└── scala
+    ├── Functions.sc
+    └── org
+        └── rico
+            ├── app
+            │   ├── ItemView.scala
+            │   ├── Rico.scala
+            │   └── UserView.scala
+            └── etl
+                ├── Batch.scala
+                ├── Extractor.scala
+                ├── Loader.scala
+                ├── Restore.scala
+                ├── Tfidf.scala
+                └── Transformer.scala
 ```
 
 ### Coding Style
 
-```scala
-val foo:String = "bar";
+```{scala}
+val sparkConf = new SparkConf()
+  .setAppName("[rico] - some task")
+  .set("spark.cassandra.connection.host", conf.getString("cassandra.host"))
+  .set("spark.cassandra.connection.port", conf.getString("cassandra.port"))
+  // ...
+  var obj = new Obj(/*some config*/)
+  val someFunction = obj.ReturFunction
+  // ...
+  val rdd2 = rdd1.map { x => someFunction x }
 ```
 
 ### Our Team
