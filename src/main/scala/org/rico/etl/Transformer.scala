@@ -18,10 +18,12 @@ class Transformer(langStemmer:String="EnglishStemmer",
                   langAnalyzer:String="EnglishAnalyzer",
                   lang:String="en") extends Serializable {
 
-  // TODO: Complete doc of stopWords
+
   /**
-    *
-    * @return
+    * Return a function table to split, filter stem words in a sentence of  paragraph<br/>
+    * it's only take a string as param and return a Seq (String => Seq[String])<br/>
+    * All element are lowercase
+    * @return list of stemmed words without stop words
     */
   def doStop():(String => Seq[String]) = {
 
@@ -38,15 +40,14 @@ class Transformer(langStemmer:String="EnglishStemmer",
             .map(_._2.toString).toList
         }
       }
-
     }
     stopStemNormalize
   }
 
   /**
-    * Return a function that able to stem one word with the lucene/snowball rules <br/>
+    * Return a function able to stem one word with the lucene/snowball rules <br/>
     * It can pass in a map, filter or any spark transformation without any serialization <br/>
-    * @return func: (String) => (String)
+    * @return func: (String) => (String) able to stem :language: words
     */
   def doStem():(String => String) = {
 
@@ -62,8 +63,7 @@ class Transformer(langStemmer:String="EnglishStemmer",
   /**
     * Take stemmer language like ''FrenchStemmer'' from org.tartarus.snowball.ext <br/>
     * package and return an intance as SnowballProgram <br/>
-    *
-    * @param lang :String class name like SwedishStemmer, FrenchStemmer etc...
+    * @param lang class name like SwedishStemmer, FrenchStemmer etc...
     * @return a SnowballProgram implementation
     */
   def stemmerFactory(lang:String):SnowballProgram = {
@@ -71,12 +71,11 @@ class Transformer(langStemmer:String="EnglishStemmer",
     Class.forName(s"$tartarus.$lang").newInstance().asInstanceOf[SnowballProgram]
   }
 
-  //TODO: Complete doc of buidAnalyzer
   /**
-    *
-    * @param lang
-    * @param langAnalyzer
-    * @return
+    * Take a package name and a class name and return a Analyzer
+    * @param lang single of language like fr, en, sv etc ...
+    * @param langAnalyzer name of class like EnglishAnalyzer, SwedishAnalyzer etc ...
+    * @return an instance of Analyzer corresponding langage used
     */
   def analyzerFactory(lang:String, langAnalyzer:String): Analyzer = {
     val lucene = "org.apache.lucene.analysis"

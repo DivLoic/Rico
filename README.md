@@ -58,7 +58,7 @@ $ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-
 #### Test
 (coming soon ...)
 
-#### Service with *SparlJobServer*
+#### Service with *SparkJobServer*
 (coming soon ...)
 
 ### Project
