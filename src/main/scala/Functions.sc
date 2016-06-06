@@ -3,11 +3,8 @@ import java.text.Normalizer
 import scala.math.BigDecimal
 import scala.util.matching.Regex
 
-cleanWords(" foo bar etc ...")
-cleanWords("& @ # ' : , ?")
-cleanWords("Préférentiel!! !")
-cleanWords("Hi, you!")
-cleanWords(" No under_score!")
+cleanWords("Hi, you! foo bar etc ...")
+cleanWords("& @ # ' : , ? No under_score!")
 cleanWords("it's 4 O'clock")
 cleanWords(" The Elephant's 4 cats. ")
 cleanWords(" éloïse")
@@ -32,6 +29,8 @@ insureParms(Array("A"))
 insureParms(Array("12563"))
 insureParms(Array("1", "2"))
 
+val chain = "%"*10
+val d = 1000D
 
 /**
   * take a description from an item and return a clean list of word <br/>

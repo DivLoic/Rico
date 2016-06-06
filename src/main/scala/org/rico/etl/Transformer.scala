@@ -18,7 +18,6 @@ class Transformer(langStemmer:String="EnglishStemmer",
                   langAnalyzer:String="EnglishAnalyzer",
                   lang:String="en") extends Serializable {
 
-
   /**
     * Return a function table to split, filter stem words in a sentence of  paragraph<br/>
     * it's only take a string as param and return a Seq (String => Seq[String])<br/>
@@ -27,18 +26,16 @@ class Transformer(langStemmer:String="EnglishStemmer",
     */
   def doStop():(String => Seq[String]) = {
 
-    def stopStemNormalize(text:String): Seq[String] = {
-      text match {
-        case null => Seq[String]()
-        case _ => {
-          val analyzer = analyzerFactory(this.lang, this.langAnalyzer)
-          val tsm  :TokenStream = analyzer.tokenStream(null, new StringReader(text))
-          val term :CharTermAttribute = tsm.addAttribute(classOf[CharTermAttribute])
+    def stopStemNormalize(text:String): Seq[String] = text match {
+      case null => Seq[String]()
+      case _ => {
+        val analyzer = analyzerFactory(this.lang, this.langAnalyzer)
+        val tsm  :TokenStream = analyzer.tokenStream(null, new StringReader(text))
+        val term :CharTermAttribute = tsm.addAttribute(classOf[CharTermAttribute])
 
-          Iterator.iterate((tsm, term)){case (a,b) => (a,b)}
-            .takeWhile(_._1.incrementToken)
-            .map(_._2.toString).toList
-        }
+        Iterator.iterate((tsm, term)){case (a,b) => (a,b)}
+          .takeWhile(_._1.incrementToken)
+          .map(_._2.toString).toList
       }
     }
     stopStemNormalize

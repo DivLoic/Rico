@@ -47,15 +47,17 @@ object Restore {
       conf.getString("sql.driver"),
       conf.getString("sql.host"),
       conf.getString("sql.port"),
+      conf.getString("sql.user"),
       conf.getString("sql.schema")
     )
 
+    // TODO: try to put this in a function
     /* mysql to cassandra: bookings_by_user */
 
     val bkgDf = ext.sqlSelect(sqlContext, "bookings", conf.getString("sql.password"))  // jdbc connection
       .select("user_id", "course_id", "create_at", "status")
 
-    ext.columns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)),bkgDf) // covert column types
+    ext.castColumns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)),bkgDf) // covert column types
 
       .map(x => new Booking(x.getInt(0),x.getInt(1),new java.util.Date(x.getLong(2)),x.getInt(3))) // map to case rdd
 
@@ -68,7 +70,7 @@ object Restore {
     val wslDf = ext.sqlSelect(sqlContext, "wishlists", conf.getString("sql.password"))
       .select("user_id", "course_id", "create_at", "status")
 
-    ext.columns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)), wslDf)
+    ext.castColumns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)), wslDf)
 
       .map( x => new Wish(x.getInt(0), x.getInt(1), new java.util.Date(x.getLong(2)), x.getInt(3)))
 
@@ -81,7 +83,7 @@ object Restore {
     val rvwDf = ext.sqlSelect(sqlContext, "reviews", conf.getString("sql.password"))
       .select("user_id", "course_id", "avgRating", "create_at", "status")
 
-    ext.columns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)), rvwDf)
+    ext.castColumns(List(("user_id",udfInt),("course_id",udfInt),("create_at",udfLong)), rvwDf)
 
       .map( x => new Review(x.getInt(0),x.getInt(1),x.getDouble(2),new java.util.Date(x.getLong(3)),x.getInt(4)))
 
