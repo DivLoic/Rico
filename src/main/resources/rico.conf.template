@@ -40,4 +40,5 @@ logger {
 # configuration of the recommender itself
 recommender {
   nbresult  = "10"
+  vectsize  = "1048576"
 }

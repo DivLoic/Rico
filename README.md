@@ -52,8 +52,24 @@ $ cqlsh -f src/main/resources/rico.cql
 $ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master>
 $ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master>
 ```
+### Usage
+
+(coming soon ...)
 
 ### Optionals
+
+#### Logging
+In order to have understandable logging system you can use the following
+configuration. First, copy the template of *log4j file* in your spark home.
+`cp ${SPARK_HOME}/conf/log4j.properties.template ${SPARK_HOME}/conf/log4j.properties`.
+Then set all logger at **ERROR**. Finaly add the following line in the file:
+```properties
+log4j.rootCategory=ALL, rico
+log4j.appender.rico=org.apache.log4j.ConsoleAppender
+log4j.appender.rico.target=System.out
+log4j.appender.rico.layout=org.apache.log4j.PatternLayout
+log4j.appender.rico.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %5p (%F:%L): %m%n
+```
 
 #### Test
 (coming soon ...)
