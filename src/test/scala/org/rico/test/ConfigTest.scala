@@ -2,6 +2,7 @@ package org.rico.test
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.FunSuite
+import org.slf4j.LoggerFactory
 
 /**
   * Created by loicmdivad on 16/05/2016.
@@ -10,6 +11,7 @@ import org.scalatest.FunSuite
 class ConfigTest extends FunSuite {
 
   val ricoConf = ConfigFactory.load("test")
+  val log = LoggerFactory.getLogger("rico")
 
   test("It should pass anyway") {
     assert(Set.empty.size == 0)

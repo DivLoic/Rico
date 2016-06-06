@@ -12,7 +12,7 @@ import org.tartarus.snowball.ext.FrenchStemmer
 class StemmingVerbTest extends FunSuite {
 
   val conf = ConfigFactory.load("rico")
-  val log = LoggerFactory.getLogger("console")
+  val log = LoggerFactory.getLogger("rico")
 
   val fr = new FrenchStemmer()
 
