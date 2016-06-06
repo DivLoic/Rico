@@ -18,7 +18,7 @@ object Tfidf {
 
   val app = new Rico()
   val conf = ConfigFactory.load("rico")
-  val log  = LoggerFactory.getLogger(getClass)
+  val log  = LoggerFactory.getLogger("rico")
 
   val ext = new Extractor(
     conf.getString("sql.driver"),
