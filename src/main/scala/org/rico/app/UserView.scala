@@ -58,7 +58,8 @@ object UserView {
 
     log warn s"Recommendation for User nbr: $USERID."
     app.ribbon("START OF THE PREDICTION")
-    scoreDf.show(conf.getInt("recommender.nbresult"))//.foreach(println)
+    Future.show(scoreDf, conf.getInt("recommender.nbresult"), false)
+    //scoreDf.show(conf.getInt("recommender.nbresult")) //.foreach(println)
     app.ribbon("END OF THE PREDICTION")
     app.time(log)
 
