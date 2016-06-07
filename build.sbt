@@ -22,9 +22,6 @@ libraryDependencies  ++= Seq(
 
   // stemming libraries
   "org.apache.lucene" % "lucene-snowball" % "3.0.3",
-  "org.apache.lucene" % "lucene-analyzers" % "3.6.2",
-
-  // REST service
-  "spark.jobserver" %% "job-server-api" % "0.6.0" % "provided"
+  "org.apache.lucene" % "lucene-analyzers" % "3.6.2"
 
 )
