@@ -76,7 +76,7 @@ object Future {
     // For Data that has more than "numRows" records
     if (hasMoreData) {
       val rowsString = if (numRows == 1) "row" else "rows"
-      sb.append(s"only showing top $numRows ${rowsString}\n")
+      //sb.append(s"only showing top $numRows ${rowsString}\n")
     }
 
     println(sb.toString())

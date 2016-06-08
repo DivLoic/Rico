@@ -41,7 +41,7 @@ object UserView {
 
     def toBreezeSparseVect = app.mapBreeze()
     def ricoDistance = app.distFactory(conf.getString("recommender.distance"))
-    log info s"Scoring starting with the ${conf.getString("recommender.distance")} distance function"
+    log info s"Scoring with the ${conf.getString("recommender.distance")} distance function ..."
 
     val tfidfRdd = sc.cassandraTable(conf.getString("cassandra.keyspace"), "termvectors")
       .map(v => (v.getInt("course_id"), v.getString("title"), toBreezeSparseVect(v)))
@@ -51,15 +51,14 @@ object UserView {
     val target = tfidfRdd.filter(x => reviews contains x._1)
       .map ( v => v._3 ).reduce( ( a , b ) => a + b )
 
-    val targetRdd = sc.broadcast(target)
+    val bctTarget = sc.broadcast(target)
 
-    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(targetRdd.value, w._3) ) }.sortBy(_._3)
+    val score = tfidfRdd.map { w => (w._1, w._2, ricoDistance(bctTarget.value, w._3)) }.sortBy(_._3)
     val scoreDf = score.toDF("id", "title", "distance")
 
     log warn s"Recommendation for User nbr: $USERID."
     app.ribbon("START OF THE PREDICTION")
     Future.show(scoreDf, conf.getInt("recommender.nbresult"), false)
-    //scoreDf.show(conf.getInt("recommender.nbresult")) //.foreach(println)
     app.ribbon("END OF THE PREDICTION")
     app.time(log)
 

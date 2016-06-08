@@ -1,7 +1,6 @@
 package org.rico.app
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.linalg.Vectors
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.SQLContext
 import com.datastax.spark.connector._
@@ -14,7 +13,7 @@ object ItemView {
 
   val app  = new Rico()
   val conf = ConfigFactory.load("rico")
-  val log  = LoggerFactory.getLogger(getClass)
+  val log  = LoggerFactory.getLogger("rico")
 
   /**
     * Perform all the verification before use args: <br/>
@@ -46,35 +45,44 @@ object ItemView {
     val sqlContext = new SQLContext(sc)
     import sqlContext.implicits._
 
-    //TODO: refactor this in a function
+    def toBreezeSparseVect = app.mapBreeze()
+    def ricoDistance = app.distFactory(conf.getString("recommender.distance"))
+
+    app.time(log)
+
     //TODO: deal with java.lang.UnsupportedOperationException: empty collection
+    log info s"Querying the course nb°$ITEMID from Cassandra"
     val row:CassandraRow = sc.cassandraTable(conf.getString("cassandra.keyspace"), "termvectors")
-      .select("indices","values")
+      .select("title", "indices","values")
       .where(s"course_id = $ITEMID").first()
 
-    val indices = row.get[List[Int]]("indices").toArray
-    val values = row.get[List[Double]]("values").toArray
+    val title = row.getString("title")
 
-    val target = Vectors.sparse(conf.getInt("recommender.vectsize"),indices, values)
+    log info s"Building a the course vector nb°$ITEMID : $title."
+    val target = toBreezeSparseVect(row)
 
+    log info s"Querying all the courses vectors table."
     val rdd = sc.cassandraTable(conf.getString("cassandra.keyspace"), "termvectors")
 
-    val tfidfRdd = rdd.map { x => (
-        x.getInt("course_id"),
-        x.getString("title"),
-        Vectors.sparse(
-          conf.getInt("recommender.vectsize"),
-          x.getList[Int]("indices").toArray,
-          x.getList[Double]("values").toArray)
+    val tfidfRdd = rdd.map {
+      v => (
+        v.getInt("course_id"),
+        v.getString("title"),
+        toBreezeSparseVect(v)
       )
     }
 
+    val bctTarget = sc.broadcast(target)
+
     //TODO: try other dist function
-    val score = tfidfRdd.map { w => ( w._1, w._2, Vectors.sqdist(target, w._3 ) ) }.sortBy(_._3)
+    log info s"Scoring with the ${conf.getString("recommender.distance")} distance function ..."
+    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(bctTarget.value, w._3 ) ) }.sortBy(_._3)
     val scoreDf = score.toDF("id", "title", "distance")
 
-    scoreDf.show(conf.getInt("recommender.nbresult"))
-    app.afterResult()
+    app.ribbon("START OF THE PREDICTION")
+    Future.show(scoreDf, conf.getInt("recommender.nbresult"), false)
+    app.ribbon("END OF THE PREDICTION")
 
+    app.time(log)
   }
 }
