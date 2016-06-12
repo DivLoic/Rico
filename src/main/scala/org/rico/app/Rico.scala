@@ -10,7 +10,7 @@ import breeze.linalg.functions._
 /**
   * Created by loicmdivad on 31/05/2016.
   */
-class Rico(var start:Long = -1){
+class Rico(var start:Long = -1) extends Serializable {
 
   /**
     *

@@ -75,7 +75,49 @@ log4j.appender.rico.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %5p (%F:%L): 
 (coming soon ...)
 
 #### Service with *SparkJobServer*
-(coming soon ...)
+Once we are able to recommend items, the application has to interact with real a information
+systems. This can be done with a *REST* service and a standard format like **JSON**. This part
+is a test using [Spark-JobServer](https://github.com/spark-jobserver/spark-jobserver) (Apache2.0).
+```bash
+$ git clone https://github.com/spark-jobserver/spark-jobserver.git
+$ cd spark-jobserver
+$ git checkout v0.6.0 # bcz spark 1.4.1
+$ export JBS_HOME=`pwd`
+```
+Then edit the file `vi project/Dependencies.scala` and the following for the rico project:
+```{scala}
+  val excludeCh = ExclusionRule(organization = "com.chuusai")
+  // ... find sparkDeps ...
+  lazy val sparkDeps = Seq(
+      // ...
+      "com.datastax.spark" % "spark-cassandra-connector_2.10" % "1.4.1",
+      "org.scalanlp" %% "breeze" % "0.12" excludeAll(excludeCh, excludeQQ)
+    )
+```
+Finally edit the configuration file:
+```bash
+$ cp config/local.conf.template config/dev.conf
+$ vi config/dev.conf
+# under context-settings add
+# spark.cassandra.connection.host = "..."
+# spark.cassandra.connection.port = "..."
+```
+HERE WE ARE, hit `sbt`, then `job-server/reStart config/dev.conf`. Load the jar and enjoy the
+only job adapted to this mode.
+```bash
+$ cd /path/to/Rico
+$ curl --data-binary @target/scala-2.10/rico_2.10-1.0.jar localhost:8090/jars/rico
+$ curl -d "param.itemid=37" "localhost:8090/jobs?appName=rico&classPath=org.rico.app.ItemViewService&sync=true&timeout=999"
+```
+*result:*
+```json
+{ "success": true,
+  "result": [
+    ["id1", "title1", "score1"],
+    ["id2", "title2", "score2"]
+  ]
+}
+```
 
 ### Project
 Here is a tree of the project folder architecture. It present all files under the
