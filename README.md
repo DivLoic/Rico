@@ -25,6 +25,7 @@ Here is the tools & versions used for the project.
 I. Environment
 Add to your `~/.bashrc` the following lines:
 ```sh
+export SPARK_PKGS="mysql:mysql-connector-java:5.1.38,"${SPARK_PKGS}
 export SPARK_PKGS="com.datastax.spark:spark-cassandra-connector_2.10:1.4.1"
 export SPARK_PKGS="org.apache.lucene:lucene-analyzers:3.6.2,${SPARK_PKGS}"
 export SPARK_PKGS="org.scalanlp:breeze_2.10:0.11.2,${SPARK_PKGS}"
@@ -64,7 +65,8 @@ configuration. First, copy the template of *log4j file* in your spark home.
 `cp ${SPARK_HOME}/conf/log4j.properties.template ${SPARK_HOME}/conf/log4j.properties`.
 Then set all logger at **ERROR**. Finaly add the following line in the file:
 ```properties
-log4j.rootCategory=ALL, rico
+log4j.logger.rico = INFO
+log4j.appender.rico.Threshold=INFO
 log4j.appender.rico=org.apache.log4j.ConsoleAppender
 log4j.appender.rico.target=System.out
 log4j.appender.rico.layout=org.apache.log4j.PatternLayout
@@ -72,7 +74,29 @@ log4j.appender.rico.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %5p (%F:%L): 
 ```
 
 #### Test
-(coming soon ...)
+During the all project we used unit test to tackle api like *snowball* or *breeze*. This helping us also to test purly functionnal
+statement when we was unfamiliar with. Here is a simple exemple using *scalatest*. We firts difine de behavior of the function 
+in a test case that extends **FunSuite**. To run the test just hit `$ sbt test`
+```{scala}
+test("Should stem the words with a Function from the Transformer"){
+    val func = trf.doStem()
+    assertResult ("mang") (func("mangé"))
+    assertResult ("nécessit") (func("nécessiteront"))
+    assertResult ("envoi") (func("envoyées"))
+    assertResult (func("finance")) (func("financement"))
+  }
+```
+Then we get the things done.
+```{scala}
+def doStem(p):(String => String) = {
+  val func = p match = {
+    case a => //...
+    case b => //...
+    case c => //...
+  }
+    func
+}
+```
 
 #### Service with *SparkJobServer*
 Once we are able to recommend items, the application has to interact with real a information
@@ -136,11 +160,12 @@ code dealing with data acquisition and `org.rico.app` refers to the recommmender
     └── org
         └── rico
             ├── app
+            │   ├── Future.scala
             │   ├── ItemView.scala
+            │   ├── ItemViewService.scala
             │   ├── Rico.scala
             │   └── UserView.scala
             └── etl
-                ├── Batch.scala
                 ├── Extractor.scala
                 ├── Loader.scala
                 ├── Restore.scala
