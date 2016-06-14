@@ -1,6 +1,5 @@
 /**
- *
- *
+ * Rico cql script
  */
 
 CREATE KEYSPACE IF NOT EXISTS kokoroe WITH REPLICATION = {

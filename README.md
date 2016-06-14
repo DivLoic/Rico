@@ -70,9 +70,10 @@ $ spark-submit --packages $SPARK_PKGS --class org.rico.app.UserView --master <yo
 ### Optionals
 
 #### Logging
-In order to have understandable logging system you can use the following configuration. First, copy the template of *log4j file*
-in your spark home. Inside the *Rico* folder: `cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
-Then set all logger at **ERROR**. Finaly add the following lines in the file:
+In order to have understandable logging system you can use the following configuration. First, copy the template of
+*log4j file* in your spark home. This template set all logger at **ERROR**. Inside the *Rico* folder:
+`cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
+
 ```properties
 log4j.logger.rico = INFO
 log4j.appender.rico.Threshold=INFO

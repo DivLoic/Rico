@@ -28,14 +28,12 @@ class Extractor (driver:String, host:String, port:String, user:String, schema:St
 
   /**
     * Convert the type of multiple column from a dataframe
-    *
     * @param cols list of pairs (column, udf) like: (col1, udf1),(col2, udf2),(col3, udf3)
     * @param df dataframe to where type modification need to be applied
     * @return a new dataframe with corrects column types
     */
   def castColumns(cols:List[(String,UserDefinedFunction)], df:DataFrame): DataFrame = cols match {
     case h :: tail => castColumns(tail, df.withColumn(h._1, h._2(df(h._1))))
-    case h :: Nil => df.withColumn(h._1, h._2(df(h._1)))
     case Nil => df
   }
 }

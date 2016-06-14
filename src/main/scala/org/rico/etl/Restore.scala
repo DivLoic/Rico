@@ -51,7 +51,6 @@ object Restore {
       conf.getString("sql.schema")
     )
 
-    // TODO: try to put this in a function
     /* mysql to cassandra: bookings_by_user */
 
     val bkgDf = ext.sqlSelect(sqlContext, "bookings", conf.getString("sql.password"))  // jdbc connection
