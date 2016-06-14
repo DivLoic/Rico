@@ -41,4 +41,6 @@ logger {
 recommender {
   nbresult  = "10"
   vectsize  = "1048576"
+  distance  = "cosine"
+  #distance possible choise:  cosine, euclidean, squared, chebyshev, manhattan, tanimoto
 }

@@ -2,10 +2,11 @@ package org.rico.app
 
 import System.{currentTimeMillis => timeMs}
 
-import com.datastax.spark.connector.CassandraRow
+import com.datastax.spark.connector._
 import breeze.linalg.{SparseVector, squaredDistance}
 import org.slf4j.Logger
 import breeze.linalg.functions._
+import org.apache.spark.SparkContext
 
 /**
   * Created by loicmdivad on 31/05/2016.
@@ -39,6 +40,14 @@ class Rico(var start:Long = -1) extends Serializable {
     toBreeze
   }
 
+  def fetchCourseIds(sc:SparkContext, keySpace:String, table:String, uid:Int) = {
+    sc.cassandraTable(keySpace, table)
+      .select("course_id")
+      .where(s"user_id = $uid")
+      .map(_.getInt(0))
+      .collect()
+  }
+
   case class UnknowDistanceName(smth:String) extends Exception
 
   /**
@@ -67,6 +76,22 @@ class Rico(var start:Long = -1) extends Serializable {
     }
 
     scoring
+  }
+
+  /**
+    * Perform all the verification before use args: <br/>
+    * args should contain only one element <br/>
+    * args element should allow .toInt conversion <br/>
+    * otherwise insureParams stop the programme
+    *
+    * @param args
+    */
+  def insureParams(args: Array[String], log:Logger):Unit = try {
+    assert(args.length equals 1); args(0).toInt
+  } catch {
+    case _ : java.lang.AssertionError => log error s"Incorrect Number of param." ; System.exit(1)
+    case _ : java.lang.NumberFormatException => log error s"Incorrect Item ID." ; System.exit(1)
+    case _ : java.lang.Exception => log error s"An Exception occurs while parcing args." ; System.exit(1)
   }
 
   def ribbon(txt:String):Unit = println("%"*25 +s"          $txt          "+ "%"*25)

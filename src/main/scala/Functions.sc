@@ -25,12 +25,19 @@ i.toInt.asInstanceOf[java.lang.Integer]
 new Timestamp(1423299953615L)
 new java.sql.Date(new Timestamp(1423299953615L).getTime)
 
-insureParms(Array("A"))
-insureParms(Array("12563"))
-insureParms(Array("1", "2"))
+//insureParms(Array("A"))
+//insureParms(Array("12563"))
+//insureParms(Array("1", "2"))
 
 val chain = "%"*10
 val d = 1000D
+
+val arrayone = Array(1,2,3,10)
+val arraytwo = Array(6,1,9,10)
+
+arrayone ++ arraytwo
+
+//Array(6,1,9,10)
 
 /**
   * take a description from an item and return a clean list of word <br/>
@@ -54,12 +61,11 @@ def cleanWords(text: Any): String = {
   }
 }
 
-def insureParms(args: Array[String]):Unit = try {
+/*def insureParms(args: Array[String]):Unit = try {
   assert(args.size equals 1); args(0).toInt
 } catch {
   case _ : java.lang.AssertionError => println("Le nombre de param est incorrect")
   case _ : java.lang.NumberFormatException => println("Le param n'est pas un nombre")
   case _ : java.lang.Exception => println("Une Exception")
   case _ => println("Une erreur ...")
-}
-
+}*/

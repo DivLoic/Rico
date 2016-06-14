@@ -46,7 +46,10 @@ object ItemViewService extends SparkJob {
 
     val brcTarget = sc.broadcast(target)
 
-    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(brcTarget.value, w._3 ) ) }.sortBy(_._3)
+    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(brcTarget.value, w._3 ) ) }
+      .sortBy(_._3).zipWithIndex.filter {
+      case (_, idx) => idx < 10 + 1
+    }.keys
 
     score.take(10)
   }

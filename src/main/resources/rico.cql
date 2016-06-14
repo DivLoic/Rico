@@ -5,7 +5,7 @@
 
 CREATE KEYSPACE IF NOT EXISTS kokoroe WITH REPLICATION = {
     'class': 'SimpleStrategy',
-    'replication_factor': '1'
+    'replication_factor': '2'
 };
 
 //DROP TABLE IF EXISTS kokoroe.termvectors;

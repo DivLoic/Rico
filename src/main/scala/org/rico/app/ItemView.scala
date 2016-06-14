@@ -15,25 +15,9 @@ object ItemView {
   val conf = ConfigFactory.load("rico")
   val log  = LoggerFactory.getLogger("rico")
 
-  /**
-    * Perform all the verification before use args: <br/>
-    * args should contain only one element <br/>
-    * args element should allow .toInt conversion <br/>
-    * otherwise insureParams stop the programme
-    *
-    * @param args
-    */
-  def insureParams(args: Array[String]):Unit = try {
-    assert(args.length equals 1); args(0).toInt
-  } catch {
-    case _ : java.lang.AssertionError => log error s"Incorrect Number of param." ; System.exit(1)
-    case _ : java.lang.NumberFormatException => log error s"Incorrect Item ID." ; System.exit(1)
-    case _ : java.lang.Exception => log error s"An Exception occurs while parcing args." ; System.exit(1)
-  }
-
   def main(args: Array[String]) {
 
-    insureParams(args)
+    app.insureParams(args, log)
     val ITEMID = args(0)
 
     val sparkConf = new SparkConf()
@@ -50,11 +34,11 @@ object ItemView {
 
     app.time(log)
 
-    //TODO: deal with java.lang.UnsupportedOperationException: empty collection
     log info s"Querying the course nb°$ITEMID from Cassandra"
     val row:CassandraRow = sc.cassandraTable(conf.getString("cassandra.keyspace"), "termvectors")
       .select("title", "indices","values")
       .where(s"course_id = $ITEMID").first()
+
 
     val title = row.getString("title")
 
@@ -74,9 +58,12 @@ object ItemView {
 
     val bctTarget = sc.broadcast(target)
 
-    //TODO: try other dist function
     log info s"Scoring with the ${conf.getString("recommender.distance")} distance function ..."
-    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(bctTarget.value, w._3 ) ) }.sortBy(_._3)
+    val score = tfidfRdd.map { w => ( w._1, w._2, ricoDistance(bctTarget.value, w._3) ) }
+      .sortBy(_._3).zipWithIndex.filter {
+        case (_, idx) => idx < conf.getInt("recommender.nbresult") + 1
+      }.keys
+
     val scoreDf = score.toDF("id", "title", "distance")
 
     app.ribbon("START OF THE PREDICTION")

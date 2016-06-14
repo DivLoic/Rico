@@ -17,7 +17,8 @@ object UserView {
 
   def main(args: Array[String]) {
 
-    val USERID = 4
+    app.insureParams(args, log)
+    val USERID = args(0).toInt
 
     val sparkConf = new SparkConf()
       .setAppName(s"[rico] - User: $USERID")
@@ -30,14 +31,25 @@ object UserView {
 
     app.time(log)
 
-    val reviews = sc.cassandraTable(conf.getString("cassandra.keyspace"), "reviews_by_user")
+    val wishes = app.fetchCourseIds(sc, conf.getString("cassandra.keyspace"), "wishes_by_user", USERID)
+    val reviews = app.fetchCourseIds(sc, conf.getString("cassandra.keyspace"), "reviews_by_user", USERID)
+    val bookings = app.fetchCourseIds(sc, conf.getString("cassandra.keyspace"), "bookings_by_user", USERID)
+
+    val courseid = wishes ++ reviews ++ bookings
+
+    /*
+    sc.cassandraTable(conf.getString("cassandra.keyspace"), "reviews_by_user")
       .select("course_id")
       .where(s"user_id = $USERID")
       .map(_.getInt(0))
-      .collect()
+      .collect()*/
 
-    //TODO: Vérifier la renormalisation
-    log info s"Number of reviews  for the targeted user: ${reviews.size}."
+    log info s"Number of reviews  for the targeted user: ${courseid.size}."
+    if(courseid.size == 0){
+      log error s"Aucune info (Booking, review, whishe) pour l'utilisateur $USERID"
+      log error s"Arret du programme"
+      sc.stop(); System.exit(1)
+    }
 
     def toBreezeSparseVect = app.mapBreeze()
     def ricoDistance = app.distFactory(conf.getString("recommender.distance"))
@@ -48,12 +60,16 @@ object UserView {
 
     tfidfRdd.cache()
 
-    val target = tfidfRdd.filter(x => reviews contains x._1)
+    val target = tfidfRdd.filter(x => courseid contains x._1)
       .map ( v => v._3 ).reduce( ( a , b ) => a + b )
 
     val bctTarget = sc.broadcast(target)
 
-    val score = tfidfRdd.map { w => (w._1, w._2, ricoDistance(bctTarget.value, w._3)) }.sortBy(_._3)
+    val score = tfidfRdd.map { w => (w._1, w._2, ricoDistance(bctTarget.value, w._3)) }
+      .sortBy(_._3).zipWithIndex.filter {
+      case (_, idx) => idx < conf.getInt("recommender.nbresult") + 1
+    }.keys
+
     val scoreDf = score.toDF("id", "title", "distance")
 
     log warn s"Recommendation for User nbr: $USERID."
