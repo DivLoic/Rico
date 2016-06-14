@@ -22,16 +22,22 @@ Here is the tools & versions used for the project.
 
 
 ### Configuration
-I. Environment
+I. Environment      
 Add to your `~/.bashrc` the following lines:
 ```sh
-export SPARK_PKGS="mysql:mysql-connector-java:5.1.38,"${SPARK_PKGS}
 export SPARK_PKGS="com.datastax.spark:spark-cassandra-connector_2.10:1.4.1"
 export SPARK_PKGS="org.apache.lucene:lucene-analyzers:3.6.2,${SPARK_PKGS}"
+export SPARK_PKGS="mysql:mysql-connector-java:5.1.38,"${SPARK_PKGS}
 export SPARK_PKGS="org.scalanlp:breeze_2.10:0.11.2,${SPARK_PKGS}"
 ```
-II. Configuration file    
-(coming soon ...)
+II. Configuration file      
+Before compiling the sources copy & edit the configuration file.
+```bash
+$ cp src/main/resources/rico.conf.template src/main/resources/rico.conf
+$ vi src/main/resources/rico.conf
+```
+Your will find pre-fill options like connection, language or the name of the distance function. To get into the confi file
+syntax see [scala-config](https://github.com/typesafehub/config).
 
 ### Setup
 
@@ -50,20 +56,24 @@ Now compile the project and run the prejob to fill the cassandra db.
 ```bash
 $ sbt package
 $ cqlsh -f src/main/resources/rico.cql
-$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master>
-$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master>
+$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master> /path/to/jar
+$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master> /path/to/jar
 ```
-### Usage
-
-(coming soon ...)
+### Usage       
+Once the project is configured, use the following command to run it:
+```bash
+$ sbt package
+$ spark-submit --packages $SPARK_PKGS --class org.rico.app.ItemView --master <your-master> /path/to/jar <id item>
+$ spark-submit --packages $SPARK_PKGS --class org.rico.app.UserView --master <your-master> /path/to/jar <id user>
+```
 
 ### Optionals
 
 #### Logging
 In order to have understandable logging system you can use the following
 configuration. First, copy the template of *log4j file* in your spark home.
-`cp ${SPARK_HOME}/conf/log4j.properties.template ${SPARK_HOME}/conf/log4j.properties`.
-Then set all logger at **ERROR**. Finaly add the following line in the file:
+`cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
+Then set all logger at **ERROR**. Finaly add the following lines in the file:
 ```properties
 log4j.logger.rico = INFO
 log4j.appender.rico.Threshold=INFO
@@ -160,14 +170,12 @@ code dealing with data acquisition and `org.rico.app` refers to the recommmender
     └── org
         └── rico
             ├── app
-            │   ├── Future.scala
             │   ├── ItemView.scala
             │   ├── ItemViewService.scala
             │   ├── Rico.scala
             │   └── UserView.scala
             └── etl
                 ├── Extractor.scala
-                ├── Loader.scala
                 ├── Restore.scala
                 ├── Tfidf.scala
                 └── Transformer.scala
