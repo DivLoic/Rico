@@ -22,15 +22,22 @@ Here is the tools & versions used for the project.
 
 
 ### Configuration
-I. Environment
+I. Environment      
 Add to your `~/.bashrc` the following lines:
 ```sh
 export SPARK_PKGS="com.datastax.spark:spark-cassandra-connector_2.10:1.4.1"
 export SPARK_PKGS="org.apache.lucene:lucene-analyzers:3.6.2,${SPARK_PKGS}"
+export SPARK_PKGS="mysql:mysql-connector-java:5.1.38,"${SPARK_PKGS}
 export SPARK_PKGS="org.scalanlp:breeze_2.10:0.11.2,${SPARK_PKGS}"
 ```
-II. Configuration file    
-(coming soon ...)
+II. Configuration file      
+Before compiling the sources copy & edit the configuration file.
+```bash
+$ cp src/main/resources/rico.conf.template src/main/resources/rico.conf
+$ vi src/main/resources/rico.conf
+```
+Your will find pre-fill options like connection, language or the name of the distance function. To get into the confi file
+syntax see [scala-config](https://github.com/typesafehub/config).
 
 ### Setup
 
@@ -49,22 +56,26 @@ Now compile the project and run the prejob to fill the cassandra db.
 ```bash
 $ sbt package
 $ cqlsh -f src/main/resources/rico.cql
-$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master>
-$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master>
+$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Restore --master <your-master> /path/to/jar
+$ spark-submit --packages $SPARK_PKGS --class org.rico.etl.Tfidf --master <your-master> /path/to/jar
 ```
-### Usage
-
-(coming soon ...)
+### Usage       
+Once the project is configured, use the following command to run it:
+```bash
+$ sbt package
+$ spark-submit --packages $SPARK_PKGS --class org.rico.app.ItemView --master <your-master> /path/to/jar <id item>
+$ spark-submit --packages $SPARK_PKGS --class org.rico.app.UserView --master <your-master> /path/to/jar <id user>
+```
 
 ### Optionals
 
 #### Logging
-In order to have understandable logging system you can use the following
-configuration. First, copy the template of *log4j file* in your spark home.
-`cp ${SPARK_HOME}/conf/log4j.properties.template ${SPARK_HOME}/conf/log4j.properties`.
-Then set all logger at **ERROR**. Finaly add the following line in the file:
+In order to have understandable logging system you can use the following configuration. First, copy the template of *log4j file*
+in your spark home. Inside the *Rico* folder: `cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
+Then set all logger at **ERROR**. Finaly add the following lines in the file:
 ```properties
-log4j.rootCategory=ALL, rico
+log4j.logger.rico = INFO
+log4j.appender.rico.Threshold=INFO
 log4j.appender.rico=org.apache.log4j.ConsoleAppender
 log4j.appender.rico.target=System.out
 log4j.appender.rico.layout=org.apache.log4j.PatternLayout
@@ -72,7 +83,29 @@ log4j.appender.rico.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %5p (%F:%L): 
 ```
 
 #### Test
-(coming soon ...)
+During the all project we used unit test to tackle api like *snowball* or *breeze*. This helping us also to test purly functionnal
+statement when we was unfamiliar with. Here is a simple exemple using *scalatest*. We firts difine de behavior of the function 
+in a test case that extends **FunSuite**. To run the test just hit `$ sbt test`
+```{scala}
+test("Should stem the words with a Function from the Transformer"){
+    val func = trf.doStem()
+    assertResult ("mang") (func("mangé"))
+    assertResult ("nécessit") (func("nécessiteront"))
+    assertResult ("envoi") (func("envoyées"))
+    assertResult (func("finance")) (func("financement"))
+  }
+```
+Then we get the things done.
+```{scala}
+def doStem(p):(String => String) = {
+  val func = p match = {
+    case a => //...
+    case b => //...
+    case c => //...
+  }
+    func
+}
+```
 
 #### Service with *SparkJobServer*
 Once we are able to recommend items, the application has to interact with real a information
@@ -102,8 +135,8 @@ $ vi config/dev.conf
 # spark.cassandra.connection.host = "..."
 # spark.cassandra.connection.port = "..."
 ```
-HERE WE ARE, hit `sbt`, then `job-server/reStart config/dev.conf`. Load the jar and enjoy the
-only job adapted to this mode.
+HERE WE ARE, hit the `sbt` command, then `job-server/reStart config/dev.conf`. Load the jar and enjoy the
+only job adapted to this mode: ItemViewService.
 ```bash
 $ cd /path/to/Rico
 $ curl --data-binary @target/scala-2.10/rico_2.10-1.0.jar localhost:8090/jars/rico
@@ -137,12 +170,11 @@ code dealing with data acquisition and `org.rico.app` refers to the recommmender
         └── rico
             ├── app
             │   ├── ItemView.scala
+            │   ├── ItemViewService.scala
             │   ├── Rico.scala
             │   └── UserView.scala
             └── etl
-                ├── Batch.scala
                 ├── Extractor.scala
-                ├── Loader.scala
                 ├── Restore.scala
                 ├── Tfidf.scala
                 └── Transformer.scala
