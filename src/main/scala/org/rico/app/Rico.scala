@@ -14,8 +14,9 @@ import org.apache.spark.SparkContext
 class Rico(var start:Long = -1) extends Serializable {
 
   /**
-    *
-    * @param l
+    * Start the timer at the first call <br/>
+    * Then log the elapsed time <br/>
+    * @param l :Logger from slf4j
     */
   def time(l:Logger):Unit = this.start match {
     case -1L => this.start = timeMs; l info "Rico timer start !"
@@ -24,9 +25,10 @@ class Rico(var start:Long = -1) extends Serializable {
   }
 
   /**
-    *
-    * @param size
-    * @return
+    * Build a Serializable task
+    * Take CassandraRow and map it to a breeze.linalg.SparseVector
+    * @param size :Int number of index for the vector 2**20
+    * @return func :(CassandraRow => SparseVector[Double])
     */
   def mapBreeze(size:Int=1048576):(CassandraRow => SparseVector[Double]) = {
 
@@ -40,6 +42,14 @@ class Rico(var start:Long = -1) extends Serializable {
     toBreeze
   }
 
+  /**
+    * Perform a select all where to fetch records for the user.
+    * @param sc :SparkContext
+    * @param keySpace :String from conf.getString
+    * @param table :String
+    * @param uid :String User id
+    * @return
+    */
   def fetchCourseIds(sc:SparkContext, keySpace:String, table:String, uid:Int) = {
     sc.cassandraTable(keySpace, table)
       .select("course_id")
@@ -51,9 +61,10 @@ class Rico(var start:Long = -1) extends Serializable {
   case class UnknowDistanceName(smth:String) extends Exception
 
   /**
-    *
-    * @param conf
-    * @return
+    * Return a Breeze distance function, throw UnknowDistanceName
+    * if the key recommender.distance is badly set
+    * @param conf :String from conf.getString
+    * @return func :(SparseVector[Double],SparseVector[Double]) => Double)
     */
   def distFactory(conf:String):((SparseVector[Double],SparseVector[Double])=>Double) = {
 
@@ -69,22 +80,12 @@ class Rico(var start:Long = -1) extends Serializable {
     func
   }
 
-  def doScore(): Unit ={
-
-    def scoring(): Unit ={
-
-    }
-
-    scoring
-  }
-
   /**
     * Perform all the verification before use args: <br/>
     * args should contain only one element <br/>
     * args element should allow .toInt conversion <br/>
     * otherwise insureParams stop the programme
-    *
-    * @param args
+    * @param args :List[String] from the main function
     */
   def insureParams(args: Array[String], log:Logger):Unit = try {
     assert(args.length equals 1); args(0).toInt

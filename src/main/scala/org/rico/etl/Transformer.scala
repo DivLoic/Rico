@@ -8,11 +8,10 @@ import org.apache.lucene.util.Version
 import org.tartarus.snowball.SnowballProgram
 
 /**
-  *
   * Created by loicmdivad on 26/05/2016.
-  * @param langStemmer
-  * @param langAnalyzer
-  * @param lang
+  * @param langStemmer :String from conf (key lang.stemmer)
+  * @param langAnalyzer :String from conf (key lang.analyzer)
+  * @param lang :String from conf (key lang.sigle)
   */
 class Transformer(langStemmer:String="EnglishStemmer",
                   langAnalyzer:String="EnglishAnalyzer",
@@ -28,7 +27,7 @@ class Transformer(langStemmer:String="EnglishStemmer",
 
     def stopStemNormalize(text:String): Seq[String] = text match {
       case null => Seq[String]()
-      case _ => {
+      case _ =>
         val analyzer = analyzerFactory(this.lang, this.langAnalyzer)
         val tsm  :TokenStream = analyzer.tokenStream(null, new StringReader(text))
         val term :CharTermAttribute = tsm.addAttribute(classOf[CharTermAttribute])
@@ -36,7 +35,6 @@ class Transformer(langStemmer:String="EnglishStemmer",
         Iterator.iterate((tsm, term)){case (a,b) => (a,b)}
           .takeWhile(_._1.incrementToken)
           .map(_._2.toString).toList
-      }
     }
     stopStemNormalize
   }

@@ -37,14 +37,7 @@ object UserView {
 
     val courseid = wishes ++ reviews ++ bookings
 
-    /*
-    sc.cassandraTable(conf.getString("cassandra.keyspace"), "reviews_by_user")
-      .select("course_id")
-      .where(s"user_id = $USERID")
-      .map(_.getInt(0))
-      .collect()*/
-
-    log info s"Number of reviews  for the targeted user: ${courseid.size}."
+    log info s"Number of records for the targeted user: ${courseid.size}."
     if(courseid.size == 0){
       log error s"Aucune info (Booking, review, whishe) pour l'utilisateur $USERID"
       log error s"Arret du programme"
@@ -76,6 +69,7 @@ object UserView {
     app.ribbon("START OF THE PREDICTION")
     Future.show(scoreDf, conf.getInt("recommender.nbresult"), false)
     app.ribbon("END OF THE PREDICTION")
+
     app.time(log)
 
   }
