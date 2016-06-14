@@ -70,9 +70,8 @@ $ spark-submit --packages $SPARK_PKGS --class org.rico.app.UserView --master <yo
 ### Optionals
 
 #### Logging
-In order to have understandable logging system you can use the following
-configuration. First, copy the template of *log4j file* in your spark home.
-`cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
+In order to have understandable logging system you can use the following configuration. First, copy the template of *log4j file*
+in your spark home. Inside the *Rico* folder: `cp src/main/resources/log4j.properties ${SPARK_HOME}/conf/log4j.properties`.
 Then set all logger at **ERROR**. Finaly add the following lines in the file:
 ```properties
 log4j.logger.rico = INFO
@@ -136,8 +135,8 @@ $ vi config/dev.conf
 # spark.cassandra.connection.host = "..."
 # spark.cassandra.connection.port = "..."
 ```
-HERE WE ARE, hit `sbt`, then `job-server/reStart config/dev.conf`. Load the jar and enjoy the
-only job adapted to this mode.
+HERE WE ARE, hit the `sbt` command, then `job-server/reStart config/dev.conf`. Load the jar and enjoy the
+only job adapted to this mode: ItemViewService.
 ```bash
 $ cd /path/to/Rico
 $ curl --data-binary @target/scala-2.10/rico_2.10-1.0.jar localhost:8090/jars/rico
